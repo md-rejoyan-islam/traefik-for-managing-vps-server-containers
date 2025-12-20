@@ -1,0 +1,101 @@
+# Dynamic Middlewares Configuration
+# These can be used by any service via middleware labels
+
+http:
+  middlewares:
+    # Security headers for all services
+    security-headers:
+      headers:
+        frameDeny: true
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+        referrerPolicy: "strict-origin-when-cross-origin"
+        customResponseHeaders:
+          X-Robots-Tag: "noindex, nofollow"
+          server: ""  # Remove server header
+
+    # Compress responses
+    compress:
+      compress:
+        excludedContentTypes:
+          - text/event-stream
+
+    # Rate limiting - standard
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 50
+        period: 1s
+
+    # Rate limiting - strict (for login pages, APIs)
+    rate-limit-strict:
+      rateLimit:
+        average: 10
+        burst: 5
+        period: 1s
+
+    # CORS headers for APIs
+    cors-headers:
+      headers:
+        accessControlAllowMethods:
+          - GET
+          - OPTIONS
+          - PUT
+          - POST
+          - DELETE
+          - PATCH
+        accessControlAllowHeaders:
+          - "*"
+        accessControlAllowOriginList:
+          - "*"
+        accessControlMaxAge: 100
+        addVaryHeader: true
+
+    # Strip prefix middleware (useful for path-based routing)
+    strip-api-prefix:
+      stripPrefix:
+        prefixes:
+          - "/api"
+
+    # Retry middleware
+    retry:
+      retry:
+        attempts: 3
+        initialInterval: 100ms
+
+    # Circuit breaker
+    circuit-breaker:
+      circuitBreaker:
+        expression: "NetworkErrorRatio() > 0.5 || ResponseCodeRatio(500, 600, 0, 600) > 0.5"
+
+    # IP whitelist (example - customize IPs)
+    ip-whitelist:
+      ipWhiteList:
+        sourceRange:
+          - "127.0.0.1/32"
+          - "192.168.0.0/16"
+          - "10.0.0.0/8"
+          - "172.16.0.0/12"
+
+    # Basic auth (placeholder - use env vars in docker-compose)
+    basic-auth:
+      basicAuth:
+        users:
+          - "admin:$apr1$ruca84Hq$mbjdMZBAG.KWn7vfN/SNK/"  # admin:changeme
+
+    # Redirect www to non-www
+    www-redirect:
+      redirectRegex:
+        regex: "^https?://www\\.(.*)"
+        replacement: "https://${1}"
+        permanent: true
+
+    # Add trailing slash
+    add-trailing-slash:
+      redirectRegex:
+        regex: "^(https?://[^/]+/[a-zA-Z0-9_-]+)$"
+        replacement: "${1}/"
+        permanent: true

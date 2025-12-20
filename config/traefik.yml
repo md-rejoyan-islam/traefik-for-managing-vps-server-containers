@@ -1,0 +1,151 @@
+# Traefik Static Configuration
+# Production-grade settings
+
+################################################################
+# Global configuration
+################################################################
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+################################################################
+# API and Dashboard configuration
+################################################################
+api:
+  dashboard: true
+  insecure: true # Enable for port 8080 access; routers add authentication
+  debug: false
+
+################################################################
+# Ping (health check endpoint)
+################################################################
+ping:
+  entryPoint: traefik
+
+################################################################
+# Entry Points configuration
+################################################################
+entryPoints:
+  # HTTP entrypoint - redirects to HTTPS
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+
+  # HTTPS entrypoint
+  websecure:
+    address: ":443"
+    http:
+      tls: {}
+      middlewares:
+        - security-headers@file
+
+  # Traefik internal entrypoint (for health checks)
+  traefik:
+    address: ":8080"
+
+################################################################
+# Docker provider configuration
+################################################################
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false # Only expose containers with traefik.enable=true
+    network: traefik-proxy
+    watch: true
+
+  # File provider for dynamic configuration
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+
+################################################################
+# Certificate Resolvers (Let's Encrypt)
+################################################################
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: rejoyanislam0014@gmail.com
+      storage: /acme.json
+      # Use staging server for testing (uncomment below, comment production)
+      # caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      # Production server
+      caServer: https://acme-v02.api.letsencrypt.org/directory
+      httpChallenge:
+        entryPoint: web
+      # For DNS challenge (if you have wildcard certs)
+      # dnsChallenge:
+      #   provider: cloudflare
+      #   delayBeforeCheck: 0
+
+  # DNS Challenge resolver (for wildcard certs - configure provider in env)
+  letsencrypt-dns:
+    acme:
+      email: rejoyanislam0014@gmail.com
+      storage: /acme.json
+      caServer: https://acme-v02.api.letsencrypt.org/directory
+      dnsChallenge:
+        provider: cloudflare
+        delayBeforeCheck: "0s"
+        resolvers:
+          - "1.1.1.1:53"
+          - "8.8.8.8:53"
+
+################################################################
+# Logging configuration
+################################################################
+log:
+  level: INFO # DEBUG, INFO, WARN, ERROR, FATAL, PANIC
+  filePath: /var/log/traefik/traefik.log
+  format: json
+
+# Access logs
+accessLog:
+  filePath: /var/log/traefik/access.log
+  format: json
+  bufferingSize: 100
+  filters:
+    statusCodes:
+      - "200-299"
+      - "400-499"
+      - "500-599"
+    retryAttempts: true
+    minDuration: "10ms"
+  fields:
+    defaultMode: keep
+    names:
+      ClientUsername: drop
+    headers:
+      defaultMode: keep
+      names:
+        User-Agent: keep
+        Authorization: drop
+        Content-Type: keep
+
+################################################################
+# Metrics (Prometheus - optional)
+################################################################
+# Uncomment to enable Prometheus metrics
+# metrics:
+#   prometheus:
+#     addEntryPointsLabels: true
+#     addRoutersLabels: true
+#     addServicesLabels: true
+#     entryPoint: traefik
+#     buckets:
+#       - 0.1
+#       - 0.3
+#       - 1.2
+#       - 5.0
+
+################################################################
+# Tracing (Jaeger - optional)
+################################################################
+# tracing:
+#   jaeger:
+#     samplingServerURL: http://jaeger:5778/sampling
+#     localAgentHostPort: jaeger:6831

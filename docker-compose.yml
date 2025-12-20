@@ -1,0 +1,107 @@
+version: "3.9"
+
+services:
+  traefik:
+    image: traefik:v3.2
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      # HTTP
+      - "80:80"
+      # HTTPS
+      - "443:443"
+      # Dashboard port (for direct access - optional, can be removed)
+      - "8080:8080"
+    environment:
+      - TZ=${TZ:-Asia/Dhaka}
+      # For Cloudflare DNS challenge (optional - for wildcard certs)
+      # - CF_API_EMAIL=${CF_API_EMAIL}
+      # - CF_API_KEY=${CF_API_KEY}
+    volumes:
+      # Docker socket for auto-discovery
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Traefik static configuration
+      - ./config/traefik.yml:/etc/traefik/traefik.yml:ro
+      # Dynamic configuration directory
+      - ./config/dynamic:/etc/traefik/dynamic:ro
+      # SSL certificates (Let's Encrypt)
+      - ./acme.json:/acme.json
+      # Local SSL certificates
+      - ./certs:/etc/traefik/certs:ro
+      # Logs
+      - ./logs:/var/log/traefik
+    networks:
+      - traefik-proxy
+    labels:
+      # Enable Traefik for this container
+      - "traefik.enable=true"
+
+      # ============================================================
+      # Dashboard Router (HTTPS with authentication)
+      # Access via: https://traefik.localhost (local)
+      # Access via: https://traefik.yourdomain.com (production)
+      # ============================================================
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.localhost`) || Host(`${TRAEFIK_DOMAIN:-traefik.localhost}`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls=true"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.middlewares=dashboard-auth,security-headers@file"
+
+      # Dashboard with Let's Encrypt for production domain
+      # Uncomment if you have a real domain
+      # - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+
+      # Dashboard authentication (basic auth)
+      # Change credentials in .env file!
+      - "traefik.http.middlewares.dashboard-auth.basicauth.users=${TRAEFIK_DASHBOARD_CREDENTIALS}"
+      - "traefik.http.middlewares.dashboard-auth.basicauth.removeheader=true"
+
+      # ============================================================
+      # Dashboard API Router (for /api and /dashboard paths)
+      # ============================================================
+      - "traefik.http.routers.traefik-api.rule=(Host(`traefik.localhost`) || Host(`${TRAEFIK_DOMAIN:-traefik.localhost}`)) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      - "traefik.http.routers.traefik-api.entrypoints=websecure"
+      - "traefik.http.routers.traefik-api.tls=true"
+      - "traefik.http.routers.traefik-api.service=api@internal"
+      - "traefik.http.routers.traefik-api.middlewares=dashboard-auth"
+
+      # ============================================================
+      # Global Middlewares (available for all services)
+      # ============================================================
+      # HTTPS redirect
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
+
+      # IP Whitelist for dashboard (optional - uncomment and configure)
+      # - "traefik.http.middlewares.dashboard-whitelist.ipwhitelist.sourcerange=127.0.0.1/32,192.168.0.0/16"
+      # Add to middlewares: dashboard-auth,dashboard-whitelist,security-headers@file
+
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ================================================================
+  # Example: Whoami test service (uncomment to test)
+  # ================================================================
+  # whoami:
+  #   image: traefik/whoami
+  #   container_name: whoami
+  #   restart: unless-stopped
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
+  #     - "traefik.http.routers.whoami.entrypoints=websecure"
+  #     - "traefik.http.routers.whoami.tls=true"
+  #     - "traefik.http.services.whoami.loadbalancer.server.port=80"
+  #   networks:
+  #     - traefik-proxy
+
+networks:
+  traefik-proxy:
+    name: traefik-proxy
+    driver: bridge

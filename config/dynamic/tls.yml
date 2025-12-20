@@ -1,0 +1,48 @@
+# TLS Configuration
+# Production-grade TLS settings
+
+tls:
+  # Default certificates for local development
+  certificates:
+    - certFile: /etc/traefik/certs/local-cert.pem
+      keyFile: /etc/traefik/certs/local-key.pem
+      stores:
+        - default
+
+  # Certificate stores
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/certs/local-cert.pem
+        keyFile: /etc/traefik/certs/local-key.pem
+
+  options:
+    default:
+      minVersion: VersionTLS12
+      maxVersion: VersionTLS13
+      cipherSuites:
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+      curvePreferences:
+        - CurveP521
+        - CurveP384
+      sniStrict: false # Set to true when using real domains
+
+    # Modern TLS (TLS 1.3 only)
+    modern:
+      minVersion: VersionTLS13
+
+    # Legacy support (if needed for older clients)
+    legacy:
+      minVersion: VersionTLS10
+      cipherSuites:
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_RSA_WITH_AES_128_GCM_SHA256
