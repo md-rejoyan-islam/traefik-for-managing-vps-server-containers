@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   traefik:
-    image: traefik:v3.2
+    image: traefik:v3.3
     container_name: traefik
     restart: unless-stopped
     security_opt:
@@ -16,6 +16,7 @@ services:
       - "8080:8080"
     environment:
       - TZ=${TZ:-Asia/Dhaka}
+      - DOCKER_API_VERSION=1.45
       # For Cloudflare DNS challenge (optional - for wildcard certs)
       # - CF_API_EMAIL=${CF_API_EMAIL}
       # - CF_API_KEY=${CF_API_KEY}
