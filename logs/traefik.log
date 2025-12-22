@@ -371,3 +371,27 @@
 {"level":"debug","entryPointName":"web","middlewareName":"tracing","middlewareType":"SemConvServerMetrics","time":"2025-12-23T02:24:36+06:00","caller":"github.com/traefik/traefik/v3/pkg/middlewares/observability/semconv.go:40","message":"Creating middleware"}
 {"level":"debug","entryPointName":"web","middlewareName":"tracing","middlewareType":"TracingEntryPoint","time":"2025-12-23T02:24:36+06:00","caller":"github.com/traefik/traefik/v3/pkg/middlewares/observability/entrypoint.go:37","message":"Creating middleware"}
 {"level":"debug","entryPointName":"websecure","time":"2025-12-23T02:24:36+06:00","caller":"github.com/traefik/traefik/v3/pkg/server/router/tcp/manager.go:237","message":"Adding route for traefik.localhost with TLS options default"}
+{"level":"info","time":"2025-12-23T03:09:35+06:00","caller":"github.com/traefik/traefik/v3/pkg/server/server.go:51","message":"I have to go..."}
+{"level":"info","time":"2025-12-23T03:09:35+06:00","caller":"github.com/traefik/traefik/v3/pkg/server/server.go:52","message":"Stopping server gracefully"}
+{"level":"debug","entryPointName":"websecure","time":"2025-12-23T03:09:35+06:00","caller":"github.com/traefik/traefik/v3/pkg/server/server_entrypoint_tcp.go:311","message":"Waiting 10s seconds before killing connections"}
+{"level":"debug","entryPointName":"web","time":"2025-12-23T03:09:35+06:00","caller":"github.com/traefik/traefik/v3/pkg/server/server_entrypoint_tcp.go:311","message":"Waiting 10s seconds before killing connections"}
+{"level":"debug","entryPointName":"traefik","time":"2025-12-23T03:09:35+06:00","caller":"github.com/traefik/traefik/v3/pkg/server/server_entrypoint_tcp.go:311","message":"Waiting 10s seconds before killing connections"}
+{"level":"debug","entryPointName":"traefik","time":"2025-12-23T03:09:35+06:00","caller":"github.com/traefik/traefik/v3/pkg/server/server_entrypoint_tcp.go:158","message":"Entrypoint closed"}
+{"level":"debug","entryPointName":"websecure","time":"2025-12-23T03:09:35+06:00","caller":"github.com/traefik/traefik/v3/pkg/server/server_entrypoint_tcp.go:158","message":"Entrypoint closed"}
+{"level":"debug","entryPointName":"web","time":"2025-12-23T03:09:35+06:00","caller":"github.com/traefik/traefik/v3/pkg/server/server_entrypoint_tcp.go:158","message":"Entrypoint closed"}
+{"level":"info","time":"2025-12-23T03:09:35+06:00","caller":"github.com/traefik/traefik/v3/pkg/server/server.go:76","message":"Server stopped"}
+{"level":"info","time":"2025-12-23T03:09:35+06:00","caller":"github.com/traefik/traefik/v3/cmd/traefik/traefik.go:170","message":"Shutting down"}
+{"level":"warn","time":"2025-12-23T03:09:36+06:00","message":"Starting with v3.6.3, Traefik now rejects some encoded characters in the request path by default. Refer to the documentation for more details: https://doc.traefik.io/traefik/migrate/v3/#encoded-characters-in-request-path"}
+{"level":"info","version":"3.6.5","time":"2025-12-23T03:09:36+06:00","message":"Traefik version 3.6.5 built on 2025-12-16T14:56:48Z"}
+{"level":"info","time":"2025-12-23T03:09:36+06:00","message":"\nVersion check is disabled.\nYou will not be notified if a new version is available.\nMore details: https://doc.traefik.io/traefik/contributing/data-collection/\n"}
+{"level":"info","time":"2025-12-23T03:09:36+06:00","message":"\nStats collection is disabled.\nHelp us improve Traefik by turning this feature on :)\nMore details on: https://doc.traefik.io/traefik/contributing/data-collection/\n"}
+{"level":"info","time":"2025-12-23T03:09:36+06:00","message":"Starting provider aggregator *aggregator.ProviderAggregator"}
+{"level":"info","time":"2025-12-23T03:09:36+06:00","message":"Starting provider *file.Provider"}
+{"level":"info","time":"2025-12-23T03:09:36+06:00","message":"Starting provider *traefik.Provider"}
+{"level":"info","time":"2025-12-23T03:09:36+06:00","message":"Starting provider *docker.Provider"}
+{"level":"info","time":"2025-12-23T03:09:36+06:00","message":"Starting provider *acme.ChallengeTLSALPN"}
+{"level":"info","time":"2025-12-23T03:09:36+06:00","message":"Starting provider *acme.Provider"}
+{"level":"info","providerName":"letsencrypt.acme","acmeCA":"https://acme-v02.api.letsencrypt.org/directory","time":"2025-12-23T03:09:36+06:00","message":"Testing certificate renew..."}
+{"level":"info","time":"2025-12-23T03:09:36+06:00","message":"Starting provider *acme.Provider"}
+{"level":"info","providerName":"letsencrypt-dns.acme","acmeCA":"https://acme-v02.api.letsencrypt.org/directory","time":"2025-12-23T03:09:36+06:00","message":"Testing certificate renew..."}
+{"level":"error","providerName":"letsencrypt.acme","acmeCA":"https://acme-v02.api.letsencrypt.org/directory","providerName":"letsencrypt.acme","ACME CA":"https://acme-v02.api.letsencrypt.org/directory","routerName":"faculty-portfolio@docker","rule":"Host(`rased.neuronomous.net`)","error":"unable to generate a certificate for the domains [rased.neuronomous.net]: error: one or more domains had a problem:\n[rased.neuronomous.net] invalid authorization: acme: error: 403 :: urn:ietf:params:acme:error:unauthorized :: 103.84.157.92: Invalid response from https://rased.neuronomous.net/.well-known/acme-challenge/bP4aAUvdD8UUbG6pOiAxClwXaYq6GTdz778DwlpoIDQ: 404\n","domains":["rased.neuronomous.net"],"time":"2025-12-23T03:09:53+06:00","message":"Unable to obtain ACME certificate for domains"}

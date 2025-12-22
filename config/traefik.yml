@@ -26,23 +26,15 @@ ping:
 # Entry Points configuration
 ################################################################
 entryPoints:
-  # HTTP entrypoint - redirects to HTTPS
+  # HTTP entrypoint (no global redirect - allows ACME challenge)
   web:
     address: ":80"
-    http:
-      redirections:
-        entryPoint:
-          to: websecure
-          scheme: https
-          permanent: true
 
   # HTTPS entrypoint
   websecure:
     address: ":443"
     http:
       tls: {}
-      middlewares:
-        - security-headers@file
 
   # Traefik internal entrypoint (for health checks)
   traefik:
