@@ -26,15 +26,9 @@ ping:
 # Entry Points configuration
 ################################################################
 entryPoints:
-  # HTTP entrypoint with global redirect to HTTPS
+  # HTTP entrypoint (no global redirect - allows ACME HTTP challenge)
   web:
     address: ":80"
-    http:
-      redirections:
-        entryPoint:
-          to: websecure
-          scheme: https
-          permanent: true
 
   # HTTPS entrypoint
   websecure:
