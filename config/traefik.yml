@@ -26,9 +26,15 @@ ping:
 # Entry Points configuration
 ################################################################
 entryPoints:
-  # HTTP entrypoint (no global redirect - allows ACME HTTP challenge)
+  # HTTP entrypoint with redirect to HTTPS (compatible with ACME HTTP challenge)
   web:
     address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
 
   # HTTPS entrypoint
   websecure:
@@ -117,7 +123,6 @@ accessLog:
         User-Agent: keep
         Authorization: drop
         Content-Type: keep
-
 ################################################################
 # Metrics (Prometheus - optional)
 ################################################################
